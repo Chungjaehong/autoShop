@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>사업의 첫걸음 - 링크업</title>
+		<link href="./css/axis/AXJ.css" rel="stylesheet" />
+		<link href="./css/axis/AXInput.css" rel="stylesheet" />
+		<link href="./css/axis/AXButton.css" rel="stylesheet" />
+    	<link href="./css/bootstrap.min.css" rel="stylesheet">
+		<link href="./css/axis/AXJ.css" rel="stylesheet" />
+		<link href="./css/axis/AXProgress.css" rel="stylesheet" />
+    	<link href="./css/style.css" rel="stylesheet">
+
+		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
+		<script src="./js/axis/AXJ.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/axis/AXProgress.js"></script>
+  </head>
+  <style type="css/text">
+
+  </style>
+  <body style="back">
+  <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
+	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
+	  <div>
+		  <font id="appVersion"> </font>
+	  </div>
+	  
+	  <iframe id="ifrView" src="http://keylinkup.com/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
+
+  </body>
+
+<script>
+	originalFs = require('original-fs');
+	got = require('got');
+
+	var myProgress = new AXProgress();
+	var remote = require('electron').remote;     
+
+	if( remote.getGlobal('sharedObj').prop1 == 1){
+		location.replace("main.html");
+	}
+
+	progStart = function(){
+		mask.open();
+		myProgress.start(function(){
+			//trace(this);
+			if(this.isEnd){
+				//toast.push("progress end");
+
+			}else{
+				myProgress.update(); // 프로그레스의 다음 카운트를 시작합니다.
+			}	
+		}, 
+		{
+			totalCount:100,
+			width:500, 
+			top:200, 
+			title:"업데이트 중..."
+		});
+	}
+
+	varVersion = 1.025;
+	
+	$("#appVersion").text("APP Ver : "+varVersion);
+	
+	function urlMoveEvent(url){//iframe onload
+		console.log(url);
+
+		if(url == "http://keylinkup.com/"){
+			$("#ifrView").hide();
+			$("#ifrView").attr("src","http://keylinkup.com/authCheck.php");
+		}
+
+		if(url == "http://keylinkup.com/authCheck.php"){
+			var mbData = $("#ifrView").contents().find('body')[0].innerText;
+			jsonMbData = JSON.parse(mbData);
+
+			if(jsonMbData.flag !="S"){
+				alert(jsonMbData.message);
+				return;
+			}else if(jsonMbData.flag =="S"){
+				loginFlagChange();
+				alert(jsonMbData.message);
+				location.replace("main.html");
+			}
+		}
+	}
+
+	updateVersionChk = function(){
+		got('https://raw.githubusercontent.com/Chungjaehong/autoBidding/master/README.md')
+		.then(response => {
+			console.log("web Version>>"+response.body);
+			console.log("app Version>>"+varVersion);
+
+			if(response.body > varVersion){
+				progStart();
+				
+				got.stream('https://github.com/Chungjaehong/autoBidding/raw/master/LinkUP-win32-x64/resources/app.asar').pipe(
+					originalFs.createWriteStream('resources/app.asar')
+					.on('finish', () => {
+							myProgress.close();
+							mask.close();
+							console.log("update Finish");
+							
+							alert("업데이트 완료. \n다시 실행 하시기 바랍니다.");
+							window.close();
+						}
+					)
+				);
+
+			}
+		}).catch(error => {
+			console.log(error.response.body);
+		});
+
+	}
+
+	updateVersionChk();
+
+	loginFlagChange = function(){
+		remote.getGlobal('sharedObj').prop1 = 1;     
+		var ipcRenderer = require('electron').ipcRenderer;
+		ipcRenderer.send('show-prop1');    
+	}
+
+</script>
+
+<script>
+	require('./renderer.js')
+</script>
+
+
+</html>

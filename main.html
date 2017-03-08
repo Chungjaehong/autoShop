@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>사업의 첫걸음 - 링크업</title>
+		<link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+		<link href="./css/axis/AXJ.css" rel="stylesheet" />
+		<link href="./css/axis/AXInput.css" rel="stylesheet" />
+		<link href="./css/axis/AXGrid.css" rel="stylesheet" />
+		<link href="./css/axis/AXButton.css" rel="stylesheet" />
+    	<link href="./css/bootstrap.min.css" rel="stylesheet">
+    	<link href="./css/style.css" rel="stylesheet">
+
+
+		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
+		<script src="./js/axis/AXJ.js"></script>
+		<script src="./js/axis/AXInput.js"></script>
+		<script src="./js/axis/AXGrid.js"></script>
+		<script src="./js/axis/AXModal.js"></script>
+		<script src="./js/bootstrap.min.js"></script>
+		<script src="./js/hmac-sha256.js"></script>
+		<script src="./js/enc-base64-min.js"></script>
+  </head>
+  <style type="css/text">
+  </style>
+  <body>
+	  	<iframe id="ifrView" src="http://keylinkup.com/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="row">
+						<div class="col-md-6">
+							<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">
+							<input type="button" id="btnTestAjax3" value="ajaxTest3" class="AXButton Blue">
+							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
+							<div class="group">
+								<label>
+									<input type="checkbox" id="chkZeroBidding" name="chkZeroBidding" value="" checked="checked"/>
+									0순위 입찰
+								</label>
+								<i class="fa fa-search fa-lg" title="순위 밖일 경우에 입찰가를 올리는 기능입니다.&#013;※입찰 스케줄 이외의 시간에 비정상적으로 입찰가가 &#013; 높아 질 수있으니 운영중이 아닐때는 체크해제 하세요."></i>
+								&nbsp;&nbsp;| &nbsp;&nbsp; 네이버 입찰대기 시간 : <input type="text" id="txtInterval" value="30"> 초
+								<i class="fa fa-search fa-lg" title="한개 그룹의 입찰 종료 후 대기시간 설정 입니다.&#013;※너무 빠른 입찰은 네이버에 차단당할 수 있습니다.&#013; 키워드 수에 따라 30초~1분을 권장합니다."></i>
+							</div>
+						</div>
+						<div class="col-md-6 text-right">
+							<input type="button" id="btnGroup" value="그룹 동기화" class="AXButton Blue">
+							<input type="button" id="btnSetting" value="설정" class="AXButton Blue">
+							<input type="button" id="btnBiddingStart" value="입찰 시작" class="AXButton Blue">
+							<input type="button" id="btnBiddingStop" value="입찰 중지" class="AXButton Blue">
+						</div>
+					</div>
+					<ul class="nav nav-tabs">
+						<li class="active" id="userDataMenu">
+							<a href="#">계정정보</a>
+						</li>
+						<li id="groupDataMenu">
+							<a href="#">자동 입찰</a>
+						</li>
+					</ul>
+					<div class="row">
+						<div class="col-md-12">
+							<div id="userDataDiv"> 
+								<h4>[그룹 리스트]</h4>
+								<div id="userDataGrid"></div>
+							</div>
+							
+							<div id="groupDataDiv">
+								<div class="col-md-12" align="right"> <font size="3em" color="#6799FF" id="myMoney"></font> </div>
+								<div class="col-md-12"><div id="groupDataGrid" style="height:150px;"></div></div>
+								<div class="col-md-12" align="left"><h4>[키워드 리스트]</h4></div>
+								<div class="col-md-12"><div id="keywordGrid" style="height:350px;"></div></div>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-8">
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+									<span class="sr-only"></span>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<font size="3em" color="#6799FF" id="progressInfo"></font>
+						</div>
+						<div class="col-md-1">
+							<img src="./img/viewLoading.gif" height="20px" id="loadingImg"/>   
+						</div>
+
+					</div>
+					<div style="display:none;">
+						<div id="modalContent" style="padding:20px;">
+							<table>
+								<tr>
+									<td> <h5>  [최대 입찰가 변경]</h5> </td>
+									<td style="padding:0 0 0 10px"> <h5>[목표 순위 변경]</h5>   </td>
+								</tr>
+								<tr>
+									<td>
+										<input type="button" id="btnBiddingAllGroup" value="전체 그룹2" class="AXButton Blue">
+										<input type="button" id="btnBiddingNowGroup" value="현재 그룹2" class="AXButton Blue">
+									</td>
+									<td td style="padding:0 0 0 10px">
+										<input type="button" id="btnRankAllGroup" value="전체 그룹1" class="AXButton green">
+										<input type="button" id="btnRankNowGroup" value="현재 그룹1" class="AXButton green">
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div style="display:none;">
+						<div id="modalBiding" style="padding:20px;">
+							변경 하실 입찰 변경가 기입. 70원 ~ 
+							</br>
+							<input type="text" id="settingValueBidding">
+							<input type="button" id="btnBiddingGroup" value="확인" class="AXButton green">
+						</div>
+						
+					</div>
+					<div style="display:none;">
+						<div id="modalSelectKey" style="padding:20px;">
+							<br/>
+							<br/>
+							<div id="selectKeywordGrid" style="height:350px;"></div>
+						</div>
+					</div>
+
+
+
+					<div style="display:none;">
+						<div id="modalRank" style="padding:20px;">
+							변경 하실 목표순위 선택. 
+							</br>
+							<select name = "settingValueRank" id="settingValueRank">
+								<option value="1">1</option><option value="2">2</option>
+								<option value="3">3</option><option value="4">4</option>
+								<option value="5">5</option><option value="6">6</option>
+								<option value="7">7</option><option value="8">8</option>
+								<option value="9">9</option><option value="10">10</option>
+								<option value="11">11(비즈)</option><option value="12">12(비즈)</option>
+								<option value="13">13(비즈)</option><option value="14">14(비즈)</option>
+								<option value="15">15(비즈)</option>
+							</select>
+							<input type="button" id="btnRankGroup" value="확인" class="AXButton green">
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+  </body>
+
+<script>
+	//화면 구성
+	$("#groupDataDiv").hide();
+	$("#btnSetting").hide();
+	$("#btnBiddingStart").hide();
+	$("#btnBiddingStop").hide();
+	$("#loadingImg").hide();
+
+	require('./js/gridMake.js');
+	require('./js/dataPick.js');
+	require('./js/fileControll.js');
+	require('./js/bidding.js');
+
+	$(document).ready(function(){
+		readFile("myInfo.ini","myInfo");
+		fnObj.usergrid.bind();
+		readFile("usergrid.json","usergrid");
+	});
+
+	$(".nav-tabs a").click(function(event) {
+		event.preventDefault();
+		$(this).parent().addClass("active");
+		$(this).parent().siblings().removeClass("active");
+	});
+
+	$("#groupDataMenu").click(function(){//자동 입찰 탭
+		$("#groupDataDiv").show();
+		$("#userDataDiv").hide();
+
+		$("#btnUser").hide();
+		$("#btnGroup").hide();
+		$("#btnSetting").show();
+		$("#btnBiddingStart").show();
+		$("#btnBiddingStop").hide();
+
+		fnObj.groupGrid.bind();
+		fnObj.keywordGrid.bind();
+	});
+
+	$("#userDataMenu").click(function(){//계정정보 탭
+		$("#userDataDiv").show();
+		$("#groupDataDiv").hide();
+
+		$("#btnUser").show();
+		$("#btnGroup").show();
+
+		$("#btnSetting").hide();
+		$("#btnBiddingStart").hide();
+		$("#btnBiddingStop").hide();
+
+		fnObj.usergrid.bind();
+		$("#userDataGrid_AX_checkAll_AX_0_AX_2").hide();
+		
+		readFile("usergrid.json","usergrid");
+	});
+
+
+	biddingStartflag = 0;
+	$("#btnBiddingStart").click(function(){ //입찰 시작 버튼
+		$("#btnBiddingStart").hide();
+		$("#btnBiddingStop").show();
+		$("#loadingImg").show();
+		
+		biddingStartflag = 1;
+		
+		progressFunction(100,"입찰 시작");
+
+		groupGridIndex = 0;
+		keywordGridIndex = 0;
+
+		groupGrid.setFocus(groupGridIndex);
+
+		//keyword
+		//selectKeyword
+		chkKeyWord =keywordGrid.getCheckedList(0); // 체크된 키워드 정보
+		chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);//체크 키워드 인덱스
+		
+		rankpickCallFlag = 0; //그룹 인덱스
+		chkKeyWordFlag = 0; //키워드 인덱스 	chkKeyWordIndex[chkKeyWordFlag].index
+
+		shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query="+chkKeyWord[0].selectKeyword+"&cat_id=&frm=NVSHATC");
+		$("#ifrView").attr("src",shopRankUrl);
+
+		keywordGrid.setFocus(0);
+	});
+
+	$("#btnBiddingStop").click(function(){ // 입찰 중지 버튼
+		$("#btnBiddingStart").show();
+		$("#btnBiddingStop").hide();
+		$("#loadingImg").hide();
+
+		biddingStartflag = 0;
+
+		clearInterval(timerId);
+
+		progressFunction(0,"입찰 중지");
+	});
+	
+	$("#btnSetting").click(function(){ // 설정 버튼
+		if( biddingStartflag >0 ){
+			alert("입찰 중지 후 설정 하시기바랍니다.");
+			return;
+		}
+
+
+		var myModal = new AXModal();
+		myModal.openDiv({
+				modalID:"modalDiv01",
+				targetID:"modalContent",
+				width:450,
+				top:150
+		});
+	});
+
+	//*********************셋팅 UI***************************** 
+	var biddingSettingFlag = "";
+	$("#btnBiddingNowGroup").click(function(){ //입찰가 변경 현재
+		biddingSettingFlag = "Now";//입찰 현재
+		biddingSettingFunction("modalDiv02","modalBiding");
+	});
+
+	$("#btnBiddingAllGroup").click(function(){ //입찰가 변경 전체
+		biddingSettingFlag = "All";//입찰 전체
+		biddingSettingFunction("modalDiv02","modalBiding");
+
+	});
+
+	$("#btnRankNowGroup").click(function(){ //순위 셋팅 현재
+		biddingSettingFlag = "All_R";//순위 현재
+		biddingSettingFunction("modalDiv03","modalRank");
+
+	});
+	
+	$("#btnRankAllGroup").click(function(){ //순위 셋팅 전체
+		biddingSettingFlag = "Now_R";//순위 전체
+		biddingSettingFunction("modalDiv03","modalRank");
+	});
+	
+	//*********************셋팅 확인 버튼 UI*****************************
+	$("#btnBiddingGroup").click(function(){ //입찰가 셋팅 확인
+		console.log();
+		console.log(">>>"+groupGridIndex);
+		
+		keywordSettingUpdateFunction($("#settingValueBidding").val());
+		keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+		var myModal = new AXModal();
+		myModal.close('modalDiv02');
+	});
+
+	$("#btnRankGroup").click(function(){ //순위 셋팅 확인
+		console.log($("#settingValueRank option:selected").val());
+		console.log(">>>"+groupGridIndex);
+		
+		keywordSettingUpdateFunction($("#settingValueRank option:selected").val());
+		keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+		var myModal = new AXModal();
+		myModal.close('modalDiv03');
+	});
+
+	keywordSettingUpdateFunction = function(val){
+		if(biddingSettingFlag=="Now"){//입찰 현재
+			for(var i=0; i < keyArData[clickGridGroupIndex].length ; i++){
+				keyArData[clickGridGroupIndex][i].maxPay = val; 
+			}
+		}
+		if(biddingSettingFlag=="All"){//
+			for(var i=0; i < keyArData.length ; i++){
+				for(var j=0; j < keyArData[i].length ; j++){
+					keyArData[i][j].maxPay = val;
+				}
+			}
+		}
+
+		if(biddingSettingFlag=="All_R"){
+			for(var i=0; i < keyArData[clickGridGroupIndex].length ; i++){
+				keyArData[clickGridGroupIndex][i].wantRank = val; 
+			}
+		}
+		if(biddingSettingFlag=="Now_R"){
+			for(var i=0; i < keyArData.length ; i++){
+				for(var j=0; j < keyArData[i].length ; j++){
+					keyArData[i][j].wantRank = val;
+				}
+			}
+		}
+	}
+
+	biddingSettingFunction = function(idModal,modalTarget){
+		var myModal = new AXModal();
+		myModal.openDiv({
+				modalID: idModal,
+				targetID: modalTarget,
+				width:250,
+				top:180
+		});
+	}
+
+	progressFunction = function(val,textInfo){//프로그래스 펑션
+		$('.progress-bar').css('width', val+'%').attr('aria-valuenow', val);
+		$("#progressInfo").text(textInfo);
+	}
+	
+	//0순위 입찰 체크박스
+	chkZeroBidding = true;
+	$("#chkZeroBidding").on( "click", function(){
+		chkZeroBidding = $("#chkZeroBidding").prop("checked");
+	});
+
+	$("#btnTestAjax2").click(function(event) {
+		shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query=3단+선반&cat_id=&frm=NVSHATC");
+		$("#ifrView").attr("src","http://shopping.naver.com/search/all.nhn?query=3단+선반&cat_id=&frm=NVSHATC");
+	});	
+
+	function urlMoveEvent(url){//iframe onload
+		if(url == shopRankUrl){
+			intervalRankDataPick = setInterval("dataPickRank()", 2000);
+		}
+	}
+	
+
+	dataPickRank = function(){
+		var rankList = $("#ifrView").contents().find('#content li.ad_bg div.info a.tit');
+
+		if(rankList.length > 0){
+			clearInterval(intervalRankDataPick);
+			
+			var index = chkKeyWordIndex[chkKeyWordFlag].index;
+
+			for(var i=0; i < rankList.length ; i++){
+				if(rankList[i].innerText == chkKeyWord[rankpickCallFlag].keyword ){
+					keyArData[groupGridIndex][index].nowRank = i;
+				}
+			}
+			
+			if(chkKeyWord.length == chkKeyWordFlag){
+				rankpickCallFlag = 0;
+				chkKeyWordFlag = 0;
+			}else{
+				chkKeyWordFlag++;
+				
+				shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query="+chkKeyWord[chkKeyWordFlag].selectKeyword+"&cat_id=&frm=NVSHATC");
+				$("#ifrView").attr("src",shopRankUrl);
+			}
+
+		}
+	}
+
+</script>
+
+<script>
+	require('./renderer.js')
+</script>
+
+
+</html>
