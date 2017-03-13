@@ -169,9 +169,10 @@
 	require('./js/bidding.js');
 
 	$(document).ready(function(){
-		readFile("myInfo.ini","myInfo");
-		fnObj.usergrid.bind();
-		readFile("usergrid.json","usergrid");
+		readFile("myInfo.ini","myInfo",function(){
+			fnObj.usergrid.bind();
+			readFile("usergrid.json","usergrid",function(){});
+		});
 	});
 
 	$(".nav-tabs a").click(function(event) {
@@ -208,7 +209,7 @@
 		fnObj.usergrid.bind();
 		$("#userDataGrid_AX_checkAll_AX_0_AX_2").hide();
 		
-		readFile("usergrid.json","usergrid");
+		readFile("usergrid.json","usergrid",function(){});
 	});
 
 

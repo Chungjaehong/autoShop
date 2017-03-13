@@ -17,7 +17,7 @@
     }
 
     ////파일읽기------------------------
-    readFile = function(filepathCustom,actionName){
+    readFile = function(filepathCustom,actionName,callback){
         var filepath = "./";
         filepath = filepath + filepathCustom; 
         
@@ -32,6 +32,7 @@
                 g_licenseKey=txtData[0].replace(/(^\s*)|(\s*$)/gi, "");
 	            g_secretKey= txtData[1].replace(/(^\s*)|(\s*$)/gi, "");
 	            g_customerId= txtData[2].replace(/(^\s*)|(\s*$)/gi, "");
+                return callback();
                 //campArData = JSON.parse(data)
                 //usergrid.setList(JSON.parse(data), null, "reload");
             }
@@ -39,6 +40,7 @@
             if(actionName == "usergrid"){
                 campArData = JSON.parse(data);
                 usergrid.setList(JSON.parse(data), null, "reload");
+                return callback();
             }
 
         });
