@@ -99,9 +99,10 @@
 										return [
 												{key: "no", label: "체크", width: "100", align: "center", formatterLabel:"입찰",formatter: "checkbox"},
 												{key: "keyword", label: "상품명", width: "150"},
-												{key: "status", label: "상태", width: "100"},
+												{key: "referenceKey", label: "상품ID", width: "100"},
+												{key: "status", label: "상태", width: "70"},
 												{key: "bidAmt", label: "입찰가", width: "100" ,formatter:"money"},
-												{key: "NudeKeyword", label: "업체수", width: "80"},
+												/*{key: "NudeKeyword", label: "업체수", width: "80"},*/
 												{key: "nowRank", label: "현재순위", width: "80",align:"right"},
 												{key: "maxPay", label: "입찰 한도", width: "*",align:"right",
 													formatter: "money",
@@ -162,7 +163,22 @@
 														}
 													}
 												},
-												{key: "selectKeyword", label: "입찰검색어", width: "150"}
+												{key: "selectKeyword", label: "입찰검색어", width: "150"
+													,editor: {
+														type: "text",
+														maxLength: 10,
+														updateWith: ["_CUD"],
+														beforeUpdate: function (val) { // 수정이 되기전 value를 처리 할 수 있음.
+															// 선택된 값은
+															console.log(val);
+															return val;
+														},
+														afterUpdate: function (val) { // 수정이 처리된 후
+															// 수정이 된 후 액션.
+															console.log(this);
+														}
+													}
+												}
 												,
 												  {
 														key: "btns", label: "상세", width: "40", align: "center", formatter: function () {

@@ -169,6 +169,7 @@
 	require('./js/bidding.js');
 
 	$(document).ready(function(){
+		$("#ifrView").hide();
 		readFile("myInfo.ini","myInfo",function(){
 			fnObj.usergrid.bind();
 			readFile("usergrid.json","usergrid",function(){});
@@ -236,7 +237,7 @@
 		rankpickCallFlag = 0; //그룹 인덱스
 		chkKeyWordFlag = 0; //키워드 인덱스 	chkKeyWordIndex[chkKeyWordFlag].index
 
-		shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query="+chkKeyWord[0].selectKeyword+"&cat_id=&frm=NVSHATC");
+		shopRankUrl = encodeURI("http://m.shopping.naver.com/search/all.nhn?query="+chkKeyWord[0].selectKeyword+"&cat_id=&frm=NVSHATC");
 		$("#ifrView").attr("src",shopRankUrl);
 
 		keywordGrid.setFocus(0);
@@ -249,7 +250,8 @@
 
 		biddingStartflag = 0;
 
-		clearInterval(timerId);
+		//clearInterval(timerId);
+		clearInterval(intervalRankDataPick);
 
 		progressFunction(0,"입찰 중지");
 	});
@@ -365,8 +367,8 @@
 	});
 
 	$("#btnTestAjax2").click(function(event) {
-		shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query=3단+선반&cat_id=&frm=NVSHATC");
-		$("#ifrView").attr("src","http://shopping.naver.com/search/all.nhn?query=3단+선반&cat_id=&frm=NVSHATC");
+		shopRankUrl = encodeURI("http://m.shopping.naver.com/search/all.nhn?query=수유쿠션&cat_id=&frm=NVSHATC");
+		$("#ifrView").attr("src",shopRankUrl);
 	});	
 
 	function urlMoveEvent(url){//iframe onload
@@ -377,26 +379,54 @@
 	
 
 	dataPickRank = function(){
-		var rankList = $("#ifrView").contents().find('#content li.ad_bg div.info a.tit');
+		//var rankList = $("#ifrView").contents().find('#content li.ad_bg div.info a.tit');//PC
+		var rankList = $("#ifrView").contents().find('#grid li div.inner div.txt_area a.info_tit'); //mobile
+		var index = chkKeyWordIndex[chkKeyWordFlag].index;
 
+		groupGrid.setFocus(groupGridIndex);
+		keywordGrid.setFocus(index);
+		progressFunction(100,chkKeyWord[rankpickCallFlag].keyword+" 순위 검색...");
+		
 		if(rankList.length > 0){
 			clearInterval(intervalRankDataPick);
-			
-			var index = chkKeyWordIndex[chkKeyWordFlag].index;
 
 			for(var i=0; i < rankList.length ; i++){
-				if(rankList[i].innerText == chkKeyWord[rankpickCallFlag].keyword ){
+				var shopId = chkKeyWord[rankpickCallFlag].referenceKey;
+				
+				if(rankList[i].className.indexOf(shopId) > 0){
 					keyArData[groupGridIndex][index].nowRank = i;
+					keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
 				}
 			}
 			
-			if(chkKeyWord.length == chkKeyWordFlag){
+			//biddingFunction(groupGridIndex,index);
+			progressFunction(100,"["+chkKeyWord[rankpickCallFlag].keyword+"] 입찰 중...");
+
+			if(chkKeyWord.length == (chkKeyWordFlag+1) ){
 				rankpickCallFlag = 0;
 				chkKeyWordFlag = 0;
+
+				if(keyArData.length == groupGridIndex+1){
+					groupGridIndex = 0;
+				}else{
+					groupGridIndex = groupGridIndex + 1;
+				}
+
+				groupGrid.setFocus(groupGridIndex);
+				keywordGrid.setList(keyArData[groupGridIndex], null, "reload");
+				chkKeyWord =keywordGrid.getCheckedList(0); // 체크된 키워드 정보
+				chkKeyWordIndex = keywordGrid.getCheckedListWithIndex(0);//체크 키워드 인덱스
+
+				progressFunction(0,"네이버 적용 대기 중...");
+				
+				var naverWaitTime = $("#txtInterval").val();
+				naverWaitTime = naverWaitTime * 1000;
+
+				intervalRankDataPick = setInterval("dataPickRank()", naverWaitTime);
 			}else{
 				chkKeyWordFlag++;
 				
-				shopRankUrl = encodeURI("http://shopping.naver.com/search/all.nhn?query="+chkKeyWord[chkKeyWordFlag].selectKeyword+"&cat_id=&frm=NVSHATC");
+				shopRankUrl = encodeURI("http://m.shopping.naver.com/search/all.nhn?query="+chkKeyWord[chkKeyWordFlag].selectKeyword+"&cat_id=&frm=NVSHATC");
 				$("#ifrView").attr("src",shopRankUrl);
 			}
 
