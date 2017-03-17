@@ -14,45 +14,20 @@
 		<script>window.$ = window.jQuery = require('./js/jquery-3.1.0.js');</script>
 		<script src="./js/axis/AXJ.js"></script>
 		<script src="./js/bootstrap.min.js"></script>
-		<script src="./js/axis/AXModal.js"></script>
 		<script src="./js/axis/AXProgress.js"></script>
   </head>
   <style type="css/text">
 
   </style>
-  <body>
+  <body style="back">
   <!--    <input type="button" id="btnTestAjax5" value="링크" class="AXButton Blue">
 	  <input type="button" id="btnTestAjax" value="업데이트" class="AXButton Blue"> -->
 	  <div>
 		  <font id="appVersion"> </font>
 	  </div>
-	<div style="display:none;">
-		<div id="modalContent" style="padding:20px;">
-			<h3>LinkUP - Shoping</h3>
-			<table>
-				<tr>
-					<td> 아이디 </td>
-					<td style="padding:0 0 0 10px"><input type="text" id="usrId" name="usrId"> </td>
-				</tr>
-				<tr>
-					<td> 패스워드 </td>
-					<td style="padding:0 0 0 10px"><input type="password" id="usrPwd" name="usrPwd"> </td>
-				</tr>
-				<tr>
-					<td>  </td>
-					<td style="padding:0 0 0 10px"> </td>
-				</tr>
-				
-				<tr align="center">
-					<td align = "center" colspan="2">
-						</br>
-						<input type="button" id="btnLogin" value="로그인" class="AXButton Blue">
-						<input type="button" id="btnAddUser" value="회원가입" class="AXButton Green">
-					</td>
-				</tr>
-			</table>
-		</div>
-	</div>
+	  
+	  <iframe id="ifrView" src="http://keylinkup.com/bbs/login.php" frameborder="0" width="1000" height="1000" scrolling="no" onload="urlMoveEvent(this.contentWindow.location.href);"></iframe>
+
   </body>
 
 <script>
@@ -143,61 +118,8 @@
 
 	updateVersionChk();
 
-	$(document).ready(function(){
-		var myModal = new AXModal();
-		myModal.openDiv({
-				modalID:"modalDiv01",
-				targetID:"modalContent",
-				width:250,
-				top:250
-		});
-
-		$("input[name=usrPwd], input[name=usrId]").keydown(function (key) {
-			if(key.keyCode == 13){
-				var sendData = {
-						usrPwd : $("#usrPwd").val(), 
-						usrId : $("#usrId").val()
-				};
-				loginChk(sendData);
-			}
-		});
-
-		$("#btnLogin").click(function(){
-			var sendData = {
-					usrPwd : $("#usrPwd").val(), 
-					usrId : $("#usrId").val()
-			};
-			loginChk(sendData);
-		});
-
-		function loginChk(param){
-
-			$.ajax({
-				type: "GET",
-				dataType: 'json',
-				url : "http://localhost/autobidding/test.php?mb_id="+ param.usrId +"&mb_password="+param.usrPwd,
-				async: false,
-				beforeSend: function(xhr, settings){
-				},
-				success: function(data){
-					if(data.result=="S"){
-						loginFlagChange(data.mb_id, data.mb_1, data.mb_2);
-					}else{
-						alert(data.message);
-					}
-				},
-				error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
-				}
-			});
-		}
-
-	});
-	loginFlagChange = function(usrId,usrDtm,usrType){
-		remote.getGlobal('sharedObj').prop1 = 1;
-		remote.getGlobal('sharedObj').usrId = usrId;
-		remote.getGlobal('sharedObj').usrDtm = usrDtm;
-		remote.getGlobal('sharedObj').usrType = usrType;
-
+	loginFlagChange = function(){
+		remote.getGlobal('sharedObj').prop1 = 1;     
 		var ipcRenderer = require('electron').ipcRenderer;
 		ipcRenderer.send('show-prop1');    
 	}

@@ -5,7 +5,7 @@ const app = electron.app
 const BrowserWindow = electron.BrowserWindow
 const ipcMain = require('electron').ipcMain;
 
-global.sharedObj = {prop1: 0};
+global.sharedObj = {prop1: 0,usrId: "",usrDtm:"",usrType:""};
 
 ipcMain.on('show-prop1', function(event) {
   console.log(global.sharedObj.prop1);
@@ -26,8 +26,8 @@ const template = [
         label: '홈',
 		    enabled : true,
 		    click (item, menuClick) {
-          //mainWindow.loadURL(`file:${__dirname}/index.html`)
-          mainWindow.loadURL(`file:${__dirname}/main.html`)
+          mainWindow.loadURL(`file:${__dirname}/index.html`)
+          //mainWindow.loadURL(`file:${__dirname}/main.html`)
         } 
       },
       {
@@ -39,7 +39,7 @@ const template = [
       }
     ]
   },
-  /*{
+  {
     label: 'View',
     submenu: [
       {
@@ -57,7 +57,7 @@ const template = [
         }
       }
     ]
-  }*/
+  }
 ]
 
 const menu = Menu.buildFromTemplate(template)

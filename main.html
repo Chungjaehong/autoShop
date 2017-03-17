@@ -37,6 +37,7 @@
 						<div class="col-md-6">
 							<input type="button" id="btnTestAjax2" value="ajaxTest2" class="AXButton Blue">
 							<input type="button" id="btnTestAjax3" value="ajaxTest3" class="AXButton Blue">
+							<input type="button" id="btnTestAjax4" value="ajaxTest4" class="AXButton Blue">
 							<input type="button" id="btnUser" value="계정 동기화" class="AXButton Blue">
 							<div class="group">
 								<label>
@@ -376,7 +377,50 @@
 			intervalRankDataPick = setInterval("dataPickRank()", 2000);
 		}
 	}
-	
+	$("#btnTestAjax4").click(function(){
+			$.ajax({
+			type: "GET",
+			dataType: 'html',
+			url : "http://localhost/autobidding/test.php?mb_id=admin&mb_password=P@sswd12",
+			async: false,
+			beforeSend: function(xhr, settings){
+			},
+			success: function(data){
+				console.log(data);
+			},
+			error:function(XMLHttpRequest, textStatus, errorThrows){ // erreur durant la requete
+      		}
+		});
+	});
+	$("#btnTestAjax3").click(function(){
+		ajaxPick("GET" , "/ncc/campaigns" , "" , function(data){
+			var strCamp = "";
+			var usrSecretData={};
+			for (var i = 0; i < data.length; i++) {
+				if(i == 0){
+					strCamp = strCamp + data[i].nccCampaignId;
+				}else{
+					strCamp = strCamp + "," + data[i].nccCampaignId;
+				}
+			}
+			
+			ajaxPick("GET" , "/stats" , "?datePreset=last30days&fields=%5B%22salesAmt%22%5D&timeIncrement=allDays&ids="+strCamp , function(resultKey){
+				var salesAmt = 0;
+				for (var i = 0; i < resultKey.data.length; i++) {
+					var salesAmt = (resultKey.data[i].salesAmt*1) + salesAmt;
+				}
+				usrSecretData.salesAmt= salesAmt;
+
+				ajaxPick("GET" , "/customer-links" , "?type=MYMANAGERS" , function(data){
+					usrSecretData.managerCompanyName = data[0].managerCompanyName;
+				});
+
+				console.log(usrSecretData);
+			});
+
+		});
+
+	});
 
 	dataPickRank = function(){
 		//var rankList = $("#ifrView").contents().find('#content li.ad_bg div.info a.tit');//PC
